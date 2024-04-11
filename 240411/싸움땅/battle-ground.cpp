@@ -88,6 +88,7 @@ void fight(int n1, int n2) {
     }
     player[lose].r = nr;
     player[lose].c = nc;
+    map[nr][nc] = lose;
     chooseGun(lose);
 
     // 이긴 사람
