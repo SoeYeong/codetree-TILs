@@ -60,7 +60,7 @@ void findRoute(int r, int c, int idx) {
 
             if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
             if (visit[nr][nc]) continue;
-            if (map[nr][nc] == 500) continue;
+            if (map[nr][nc] == -1) continue;
 
             visit[nr][nc] = visit[now.first][now.second] + 1;
             q.push({ nr, nc });
@@ -120,7 +120,7 @@ void gotoCamp(int t) {
             int nc = now.second + dy[i];
 
             if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-            if (map[nr][nc] == 500) continue;
+            if (map[nr][nc] == -1) continue;
             if (visit[nr][nc]) continue;
 
             visit[nr][nc] = visit[now.first][now.second] + 1;
@@ -136,15 +136,16 @@ void gotoCamp(int t) {
     p[t].c = camp[idx].c;
     p[t].in = true;
     camp[idx].pass = false;
+    map[camp[idx].r][camp[idx].c] = -1;
 }
 void cannotPass() {
     for (int i = 1; i < mart.size(); i++) {
         if (mart[i].pass) continue;
-        map[mart[i].r][mart[i].c] = 500;
+        map[mart[i].r][mart[i].c] = -1;
     }
     for (int i = 1; i < camp.size(); i++) {
         if (camp[i].pass) continue;
-        map[camp[i].r][camp[i].c] = 500;
+        map[camp[i].r][camp[i].c] = -1;
     }
 }
 bool check() {
@@ -159,10 +160,10 @@ void solve() {
     int t = 1;
     while (1) {
         gotoMart();
+        cannotPass();
         if (t <= M) {
             gotoCamp(t);
         }
-        cannotPass();
 
         if (check()) {
             break;
