@@ -42,8 +42,8 @@ void movePlayer() {
         if (nr == Sr && nc == Sc) continue;
 
         // 술래 없는 경우
-        int j;
-        for (j = 0; j < map[r][c].size(); j++) {
+        int j = 0;
+        for (j; j < map[r][c].size(); j++) {
             if (map[r][c][j] == i) break;
         }
         map[r][c].erase(map[r][c].begin() + j);
@@ -65,7 +65,7 @@ void moveSullae(int turn) {
         Sdir = 0;
     }
     else if (changeDir[Sr][Sc]) {
-        if (turn / (N * N - 1)) {
+        if ((turn / (N * N - 1)) % 2) {
             Sdir--;
             if (Sdir < 0) {
                 Sdir = 3;
