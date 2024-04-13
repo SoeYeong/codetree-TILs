@@ -88,8 +88,8 @@ void remove() {
             temp.push_back({ i,j });
 
             for (int d = 4; d < 8; d++) {
+                bool flag = false;
                 for (int k = 1; k <= K; k++) {
-                    bool flag = false;
                     int nr = i + k * dx[d];
                     int nc = j + k * dy[d];
                     if (nr < 1 || nr > N || nc < 1 || nc > N) break;
