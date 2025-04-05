@@ -21,7 +21,7 @@ int main() {
     long long ans = 0;
     for (int i = 0; i < N; i++) {
         ans += 1;
-        if (store[i] / tester[0] == 0) {
+        if (store[i] <= tester[0]) {
             continue;
         }
         store[i] -= tester[0];
