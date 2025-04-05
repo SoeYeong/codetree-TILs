@@ -7,8 +7,10 @@ int N;
 int work[MAX][2];
 int ans = 0;
 
-void dfs(int idx, int val) {
+void dfs(int idx, int val, int i) {
     if (idx > N) {
+        val -= work[i][1];
+        ans = (val > ans) ? val : ans;
         return;
     }
     if (idx == N) {
@@ -16,8 +18,8 @@ void dfs(int idx, int val) {
         return;
     }
 
-    for (int i = idx + 1; i <= N; i++) {
-        dfs(i + work[i][0] - 1, val + work[i][1]);
+    for (i = idx + 1; i <= N; i++) {
+        dfs(i + work[i][0] - 1, val + work[i][1], i);
     }
 }
 int main() {
@@ -30,7 +32,7 @@ int main() {
         cin >> work[i][0] >> work[i][1];
     }
     
-    dfs(0, 0);
+    dfs(0, 0, 0);
     cout << ans;
 
     return 0;
