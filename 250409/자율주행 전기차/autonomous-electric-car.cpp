@@ -89,7 +89,8 @@ void move() {
     int ey = customer[idx].ey;
 
     // 승객 거리 확인
-    if (C < visit[sx][sy] - 1) {
+    // 못 가는 경우 || 가다가 멈추는 경우
+    if (visit[sx][sy] == 0 || C < visit[sx][sy] - 1) {
         stop = true;
         return;
     }
@@ -101,7 +102,8 @@ void move() {
     bfs(ex, ey);
 
     // 승객 목적지 거리 확인
-    if (C < visit[ex][ey] - 1) {
+    // 못 가는 경우 || 가다가 멈추는 경우
+    if (visit[ex][ey] == 0 || C < visit[ex][ey] - 1) {
         stop = true;
         return;
     }
