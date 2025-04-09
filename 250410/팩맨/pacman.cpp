@@ -6,7 +6,7 @@
 using namespace std;
 
 struct mon {
-    int d;
+    int d = 0;
     int dead = -1;
 };
 struct pos {
@@ -23,12 +23,11 @@ int visit[5][5];
 int dr[9] = { 0,-1,-1,0,1,1,1,0,-1 };
 int dc[9] = { 0,0,-1,-1,-1,0,1,1,1 };
 
-void moveCheck(int r, int c, int& d) {
+int moveCheck(int r, int c, int& d) {
     int origind = d;
     int cnt = 0;
     while (1) {
-        d %= 9;
-        if (d == 0) d++;
+        if (d == 9) d = 1;
 
         int nr = r + dr[d];
         int nc = c + dc[d];
@@ -59,6 +58,7 @@ void moveCheck(int r, int c, int& d) {
 
         break;
     }
+    return cnt;
 }
 void monsterMove() {
     vector<mon> newmap[5][5];
@@ -68,7 +68,12 @@ void monsterMove() {
             for (int k = 0; k < map[i][j].size(); k++) {
                 mon temp = map[i][j][k];
 
-                moveCheck(i, j, temp.d);
+                int cnt = moveCheck(i, j, temp.d);
+                if (cnt == 8) {
+                    newmap[i][j].push_back(temp);
+                    continue;
+                }
+
                 int nr = i + dr[temp.d];
                 int nc = j + dc[temp.d];
 
@@ -94,40 +99,58 @@ void monsterCopy() {
         }
     }
 }
+void pacmanMoveCheck(int& d) {
+    int nr, nc;
+
+    while (1) {
+        nr = pm.r + dr[d];
+        nc = pm.c + dc[d];
+        if (nr < 1 || nr > 4 || nc < 1 || nc > 4) {
+            d += 2;
+            d %= 9;
+            if (d == 0) 
+                d = 1;
+        }
+        else {
+            break;
+        }
+    }
+}
 void removeMonster(int d1, int d2, int d3) {
-    int nr = pm.r + dr[d1];
-    int nc = pm.c + dc[d1];
+    pacmanMoveCheck(d1);
+    pm.r += dr[d1];
+    pm.c += dc[d1];
 
-    while (!map[nr][nc].empty()) {
-        mon temp = map[nr][nc].back();
-        map[nr][nc].pop_back();
-
-        temp.dead = turn;
-        dead[nr][nc].push_back(temp);
-    }
-
-    nr += dr[d2];
-    nc += dc[d2];
-    while (!map[nr][nc].empty()) {
-        mon temp = map[nr][nc].back();
-        map[nr][nc].pop_back();
+    while (!map[pm.r][pm.c].empty()) {
+        mon temp = map[pm.r][pm.c].back();
+        map[pm.r][pm.c].pop_back();
 
         temp.dead = turn;
-        dead[nr][nc].push_back(temp);
+        dead[pm.r][pm.c].push_back(temp);
     }
 
-    nr += dr[d3];
-    nc += dc[d3];
-    while (!map[nr][nc].empty()) {
-        mon temp = map[nr][nc].back();
-        map[nr][nc].pop_back();
+    pacmanMoveCheck(d2);
+    pm.r += dr[d2];
+    pm.c += dc[d2];
+    while (!map[pm.r][pm.c].empty()) {
+        mon temp = map[pm.r][pm.c].back();
+        map[pm.r][pm.c].pop_back();
 
         temp.dead = turn;
-        dead[nr][nc].push_back(temp);
+        dead[pm.r][pm.c].push_back(temp);
     }
 
-    pm.r = nr;
-    pm.c = nc;
+    pacmanMoveCheck(d3);
+    pm.r += dr[d3];
+    pm.c += dc[d3];
+    while (!map[pm.r][pm.c].empty()) {
+        mon temp = map[pm.r][pm.c].back();
+        map[pm.r][pm.c].pop_back();
+
+        temp.dead = turn;
+        dead[pm.r][pm.c].push_back(temp);
+    }
+
 }
 void dfs(int r, int c, int cnt, int val, int d1, int d2, int d3) {
     if (cnt == 3) {
@@ -138,13 +161,10 @@ void dfs(int r, int c, int cnt, int val, int d1, int d2, int d3) {
     for (int i = 1; i < 9; i += 2) {
         int nr = r + dr[i];
         int nc = c + dc[i];
-        if (nr < 1 || nr > 5 || nc < 1 || nc > 5) continue;
-        if (visit[nr][nc]) continue;
+        if (nr < 1 || nr > 4 || nc < 1 || nc > 4) continue;
 
-        visit[nr][nc] = 1;
         int s = map[nr][nc].size();
         int d = i / 2;
-
         if (cnt == 0) {
             d1 = d;
         }
@@ -154,13 +174,21 @@ void dfs(int r, int c, int cnt, int val, int d1, int d2, int d3) {
         else {
             d3 = d;
         }
-        dfs(nr, nc, cnt + 1, val + s, d1, d2, d3);
-        visit[nr][nc] = 0;
+
+        if (visit[nr][nc]) {
+            dfs(nr, nc, cnt + 1, val, d1, d2, d3);
+        }
+        else {
+            visit[nr][nc] = 1;
+            dfs(nr, nc, cnt + 1, val + s, d1, d2, d3);
+            visit[nr][nc] = 0;
+        }
     }
 }
 void pacmanMove() {
     memset(maxx, 0, sizeof(maxx));
     memset(visit, 0, sizeof(visit));
+    visit[pm.r][pm.c] = 1;
 
     dfs(pm.r, pm.c, 0, 0, 0, 0, 0);
     int d1 = 0, d2 = 0, d3 = 0;
@@ -196,14 +224,16 @@ void monsterComplete() {
     }
 }
 void deadCheck() {
+    vector<mon> temp;
     for (int i = 1; i < 5; i++) {
         for (int j = 1; j < 5; j++) {
             for (int k = 0; k < dead[i][j].size(); k++) {
-                if (turn - dead[i][j][k].dead > 2) {
-                    dead[i][j].erase(dead[i][j].begin() + k);
-                    k--;
+                if (turn - dead[i][j][k].dead <= 2) {
+                    temp.push_back(dead[i][j][k]);
                 }
             }
+            dead[i][j].swap(temp);
+            temp.clear();
         }
     }
 }
@@ -228,7 +258,7 @@ void solution() {
         monsterMove();
         pacmanMove();
         monsterComplete();
-
+ 
         turn++;
     }
 
@@ -252,7 +282,6 @@ int main() {
 
     input();
     solution();
-
 
     return 0;
 }
