@@ -33,7 +33,7 @@ int moveCheck(int r, int c, int& d) {
         int nc = c + dc[d];
         cnt++;
 
-        if (cnt == 8) {
+        if (cnt > 8) {
             d = origind;
             break;
         }
@@ -69,7 +69,7 @@ void monsterMove() {
                 mon temp = map[i][j][k];
 
                 int cnt = moveCheck(i, j, temp.d);
-                if (cnt == 8) {
+                if (cnt > 8) {
                     newmap[i][j].push_back(temp);
                     continue;
                 }
@@ -150,7 +150,6 @@ void removeMonster(int d1, int d2, int d3) {
         temp.dead = turn;
         dead[pm.r][pm.c].push_back(temp);
     }
-
 }
 void dfs(int r, int c, int cnt, int val, int d1, int d2, int d3) {
     if (cnt == 3) {
@@ -186,13 +185,13 @@ void dfs(int r, int c, int cnt, int val, int d1, int d2, int d3) {
     }
 }
 void pacmanMove() {
-    memset(maxx, 0, sizeof(maxx));
+    memset(maxx, -1, sizeof(maxx));
     memset(visit, 0, sizeof(visit));
     visit[pm.r][pm.c] = 1;
 
     dfs(pm.r, pm.c, 0, 0, 0, 0, 0);
     int d1 = 0, d2 = 0, d3 = 0;
-    int temp = 0;
+    int temp = -1;
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
