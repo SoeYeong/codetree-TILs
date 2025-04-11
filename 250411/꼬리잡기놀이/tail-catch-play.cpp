@@ -167,7 +167,7 @@ void getScore(int r, int c) {
     changeDirection(teamNum);
 }
 void throwBall() {
-    int ballDir = (Round / 4) % 4;
+    int ballDir = (Round / N) % 4;
     int row, col;
 
     if (ballDir == 0) {
