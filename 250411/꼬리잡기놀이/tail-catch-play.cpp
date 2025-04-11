@@ -38,7 +38,7 @@ void bfs(int x, int y, int teamNum) {
             if (map[nx][ny] == 0) continue;
             if (visit[nx][ny]) continue;
 
-            if (map[now.x][now.y] == 1 && (map[nx][ny] == 2 || map[nx][ny] == 3)) {
+            if (map[now.x][now.y] == 1 && map[nx][ny] == 2) {
                 visit[nx][ny] = true;
                 q.push({ nx, ny });
                 team[teamNum].push_back({ nx, ny });
