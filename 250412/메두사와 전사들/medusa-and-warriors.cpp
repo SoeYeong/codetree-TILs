@@ -30,6 +30,9 @@ int dist, stone, attack;
 // 상, 하, 좌, 우
 int dr[4] = { -1,1,0,0 };
 int dc[4] = { 0,0,-1,1 };
+// 좌, 우, 상, 하
+int dr2[4] = { 0,0,-1,1 };
+int dc2[4] = { -1,1,0,0 };
 
 void init() {
     dist = stone = attack = 0;
@@ -347,21 +350,37 @@ int getDistance(pos a, pos b) {
 
     return dist;
 }
-int soldierMoveCheck(soldier s) {
+int soldierMoveCheck(soldier s, int n) {
     int curDist = getDistance(medusa, {s.r, s.c});
     int dir = 5;
 
-    for (int i = 0; i < 4; i++) {
-        int nr = s.r + dr[i];
-        int nc = s.c + dc[i];
+    if (n == 0) {
+        for (int i = 0; i < 4; i++) {
+            int nr = s.r + dr[i];
+            int nc = s.c + dc[i];
 
-        if (outOfBound(nr, nc) == false) continue;
-        int newDist = getDistance(medusa, { nr,nc });
-        if (curDist <= newDist) continue;
-        if (sight[nr][nc] == SIGHT || sight[nr][nc] == STONE) continue;
+            if (outOfBound(nr, nc) == false) continue;
+            int newDist = getDistance(medusa, { nr,nc });
+            if (curDist <= newDist) continue;
+            if (sight[nr][nc] == SIGHT || sight[nr][nc] == STONE) continue;
 
-        dir = i;
-        break;
+            dir = i;
+            break;
+        }
+    }
+    else {
+        for (int i = 0; i < 4; i++) {
+            int nr = s.r + dr2[i];
+            int nc = s.c + dc2[i];
+
+            if (outOfBound(nr, nc) == false) continue;
+            int newDist = getDistance(medusa, { nr,nc });
+            if (curDist <= newDist) continue;
+            if (sight[nr][nc] == SIGHT || sight[nr][nc] == STONE) continue;
+
+            dir = i;
+            break;
+        }
     }
 
     return dir;
@@ -381,7 +400,7 @@ void soldiersMove() {
         }
 
         // 이동 가능한지 확인
-        int dir = soldierMoveCheck(soldiers[i]);
+        int dir = soldierMoveCheck(soldiers[i], 0);
         if (dir == 5) { // 이동 불가
             sdMap[r][c].push_back(i);
             continue;
@@ -399,15 +418,15 @@ void soldiersMove() {
             continue;
         }
 
-        dir = soldierMoveCheck(soldiers[i]);
+        dir = soldierMoveCheck(soldiers[i], 1);
         if (dir == 5) { // 이동 불가
             sdMap[r][c].push_back(i);
             continue;
         }
-        soldiers[i].r += dr[dir];
-        soldiers[i].c += dc[dir];
-        r += dr[dir];
-        c += dc[dir];
+        soldiers[i].r += dr2[dir];
+        soldiers[i].c += dc2[dir];
+        r += dr2[dir];
+        c += dc2[dir];
         dist++;
 
         // 공격
