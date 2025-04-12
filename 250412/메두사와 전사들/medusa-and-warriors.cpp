@@ -105,7 +105,7 @@ void meetSoldier(int r, int c, int dir) {
     // 상
     if (dir == 0) {
         if (c == medusa.c) {
-            for (int nr = r - 1; r >= 0; r--) {
+            for (int nr = r - 1; nr >= 0; nr--) {
                 sight[nr][c] = HIDE;
             }
         }
@@ -133,7 +133,7 @@ void meetSoldier(int r, int c, int dir) {
     // 하
     else if (dir == 1) {
         if (c == medusa.c) {
-            for (int nr = r + 1; r < N; r++) {
+            for (int nr = r + 1; nr < N; nr++) {
                 sight[nr][c] = HIDE;
             }
         }
@@ -161,7 +161,7 @@ void meetSoldier(int r, int c, int dir) {
     // 좌
     else if (dir == 2) {
         if (r == medusa.r) {
-            for (int nc = c - 1; c >= 0; c--) {
+            for (int nc = c - 1; nc >= 0; nc--) {
                 sight[r][nc] = HIDE;
             }
         }
@@ -189,7 +189,7 @@ void meetSoldier(int r, int c, int dir) {
     // 우
     else {
         if (r == medusa.r) {
-            for (int nc = c + 1; c < N; c++) {
+            for (int nc = c + 1; nc < N; nc++) {
                 sight[r][nc] = HIDE;
             }
         }
